@@ -1,25 +1,20 @@
-#ifndef INC_WORK_H_
-#define INC_WORK_H_
+#ifndef INC_TIMERS_H_
+#define INC_TIMERS_H_
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 //----------------------- подключим файлы ------------------------------------//
-#include "stm32f4xx_hal.h"
+#include "stm32f4xx.h"
 #include "saportAndData.h"
-#include "Ili9341LibTouch.h"
-#include "GUI.h"
-#include "timers.h"
 //----------------------- дефайним значения ----------------------------------//
 
 
 //----------------------- объявим функции ------------------------------------//
-void doWork (void);
-void Work (void);
-void calibration (void);
-//----------------------- объявим структуры ----------------------------------//
 
+
+//----------------------- объявим структуры ----------------------------------//
 
 
 
@@ -27,4 +22,4 @@ void calibration (void);
 }
 #endif
 
-#endif /* INC_WORK_H_ */
+#endif /* INC_TIMERS_H_ */

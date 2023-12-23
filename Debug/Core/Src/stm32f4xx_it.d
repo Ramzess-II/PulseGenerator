@@ -27,16 +27,16 @@ Core/Src/stm32f4xx_it.o: ../Core/Src/stm32f4xx_it.c ../Core/Inc/main.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
- ../Core/Inc/work.h ../Core/Inc/saportAndData.h ../Core/Inc/GUI.h \
+ ../Core/Inc/work.h ../Core/Inc/saportAndData.h \
+ C:/Users/Solov/STM32CubeIDE/workspace_1.11.0/PulseGeneratorILI9341/Core/Ili9341Lib/Ili9341LibTouch.h \
+ ../Core/Inc/saportAndData.h ../Core/Inc/GUI.h \
  C:/Users/Solov/STM32CubeIDE/workspace_1.11.0/PulseGeneratorILI9341/Core/Ili9341Lib/ili9341Lib.h \
  C:/Users/Solov/STM32CubeIDE/workspace_1.11.0/PulseGeneratorILI9341/Core/Ili9341Lib/FontLitll.h \
  C:/Users/Solov/STM32CubeIDE/workspace_1.11.0/PulseGeneratorILI9341/Core/Ili9341Lib/FontBig.h \
- ../Core/Inc/saportAndData.h \
  C:/Users/Solov/STM32CubeIDE/workspace_1.11.0/PulseGeneratorILI9341/Core/Ili9341Lib/monochromImg.h \
  C:/Users/Solov/STM32CubeIDE/workspace_1.11.0/PulseGeneratorILI9341/Core/Ili9341Lib/ColorImg.h \
- C:/Users/Solov/STM32CubeIDE/workspace_1.11.0/PulseGeneratorILI9341/Core/Ili9341Lib/Ili9341LibTouch.h \
  C:/Users/Solov/STM32CubeIDE/workspace_1.11.0/PulseGeneratorILI9341/Core/Ili9341Lib/ColorImg.h \
- ../Core/Inc/stm32f4xx_it.h
+ ../Core/Inc/timers.h ../Core/Inc/stm32f4xx_it.h
 ../Core/Inc/main.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
 ../Core/Inc/stm32f4xx_hal_conf.h:
@@ -68,13 +68,14 @@ Core/Src/stm32f4xx_it.o: ../Core/Src/stm32f4xx_it.c ../Core/Inc/main.h \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h:
 ../Core/Inc/work.h:
 ../Core/Inc/saportAndData.h:
+C:/Users/Solov/STM32CubeIDE/workspace_1.11.0/PulseGeneratorILI9341/Core/Ili9341Lib/Ili9341LibTouch.h:
+../Core/Inc/saportAndData.h:
 ../Core/Inc/GUI.h:
 C:/Users/Solov/STM32CubeIDE/workspace_1.11.0/PulseGeneratorILI9341/Core/Ili9341Lib/ili9341Lib.h:
 C:/Users/Solov/STM32CubeIDE/workspace_1.11.0/PulseGeneratorILI9341/Core/Ili9341Lib/FontLitll.h:
 C:/Users/Solov/STM32CubeIDE/workspace_1.11.0/PulseGeneratorILI9341/Core/Ili9341Lib/FontBig.h:
-../Core/Inc/saportAndData.h:
 C:/Users/Solov/STM32CubeIDE/workspace_1.11.0/PulseGeneratorILI9341/Core/Ili9341Lib/monochromImg.h:
 C:/Users/Solov/STM32CubeIDE/workspace_1.11.0/PulseGeneratorILI9341/Core/Ili9341Lib/ColorImg.h:
-C:/Users/Solov/STM32CubeIDE/workspace_1.11.0/PulseGeneratorILI9341/Core/Ili9341Lib/Ili9341LibTouch.h:
 C:/Users/Solov/STM32CubeIDE/workspace_1.11.0/PulseGeneratorILI9341/Core/Ili9341Lib/ColorImg.h:
+../Core/Inc/timers.h:
 ../Core/Inc/stm32f4xx_it.h:

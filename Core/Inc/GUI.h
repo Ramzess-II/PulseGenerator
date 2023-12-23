@@ -24,13 +24,13 @@ extern "C" {
 #define MINUS            0
 
 //----------------------- объявим функции ------------------------------------//
-void mainDisplayPrint (void);
 void checkButtonPress (void);
 void workDisplay (void);
 void startDisplay (void);
 void GUIPostHandler (void);
 void GUICalibration (uint8_t pozition);
 void setOK (uint8_t flag);
+void NPN_PNPButton(uint8_t type, uint8_t status);
 //----------------------- объявим структуры ----------------------------------//
 
 

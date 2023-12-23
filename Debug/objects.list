@@ -12,6 +12,7 @@
 "./Core/Src/syscalls.o"
 "./Core/Src/sysmem.o"
 "./Core/Src/system_stm32f4xx.o"
+"./Core/Src/timers.o"
 "./Core/Src/work.o"
 "./Core/Startup/startup_stm32f411ceux.o"
 "./Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.o"

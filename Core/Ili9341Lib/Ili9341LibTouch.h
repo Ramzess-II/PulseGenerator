@@ -27,12 +27,10 @@ extern SPI_HandleTypeDef ILI9341_TOUCH_SPI_PORT;
 #define READ_Y 0xD0
 
 // to calibrate uncomment UART_Printf line in ili9341_touch.c
-#define ILI9341_TOUCH_MIN_RAW_X 362
-#define ILI9341_TOUCH_MAX_RAW_X 3935
-#define ILI9341_TOUCH_MIN_RAW_Y 210
-#define ILI9341_TOUCH_MAX_RAW_Y 3862
-
-
+//#define ILI9341_TOUCH_MIN_RAW_X 362
+//#define ILI9341_TOUCH_MAX_RAW_X 3935
+//#define ILI9341_TOUCH_MIN_RAW_Y 210
+//#define ILI9341_TOUCH_MAX_RAW_Y 3862
 
 //----------------------- объявим функции ------------------------------------//
 

@@ -8,11 +8,15 @@ uint32_t maxRawY;
 uint32_t minX, maxX, minY, maxY;
 //------------------------------ функции ---------------------------------------------//
 
-void ILI9341_ToucInit (void){
-	uint32_t* tempAdr = (uint32_t*)ADR_DATA_MIN_X;
-	//minRawX = *tempAdr;
-    tempAdr = (uint32_t*)ADR_DATA_MAX_X;
-	//maxRawX = *tempAdr;
+void ILI9341_ToucInit(void) {
+	uint32_t *tempAdr = (uint32_t*) ADR_DATA_MIN_X;
+	minRawX = *tempAdr;
+	tempAdr = (uint32_t*) ADR_DATA_MAX_X;
+	maxRawX = *tempAdr;
+	tempAdr = (uint32_t*) ADR_DATA_MIN_Y;
+	minRawY = *tempAdr;
+	tempAdr = (uint32_t*) ADR_DATA_MAX_Y;
+	maxRawY = *tempAdr;
 }
 /**************************************************************************
  @brief     will return the modulus of the num like abs in C
@@ -71,12 +75,16 @@ bool ILI9341_TouchGetCoordinates(uint16_t *x, uint16_t *y) {
 		return false;
 
 	uint32_t raw_x = (avg_x / 16);
-	if (raw_x < minRawX) raw_x = minRawX;
-	if (raw_x > maxRawX) raw_x = maxRawX;
+	if (raw_x < minRawX)
+		raw_x = minRawX;
+	if (raw_x > maxRawX)
+		raw_x = maxRawX;
 
 	uint32_t raw_y = (avg_y / 16);
-	if (raw_y < minRawY) raw_y = minRawY;
-	if (raw_y > maxRawY) raw_y = maxRawY;
+	if (raw_y < minRawY)
+		raw_y = minRawY;
+	if (raw_y > maxRawY)
+		raw_y = maxRawY;
 
 	// Uncomment this line to calibrate touchscreen:
 	// UART_Printf("raw_x = %d, raw_y = %d\r\n", x, y);
@@ -87,7 +95,7 @@ bool ILI9341_TouchGetCoordinates(uint16_t *x, uint16_t *y) {
 	return true;
 }
 
-void figuringData (void){
+void figuringData(void) {
 	uint32_t multiplicationFactorX, multiplicationFactorY;
 	minX = minX / 2;
 	minY = minY / 2;
@@ -108,7 +116,7 @@ uint8_t calibTouch(uint8_t poz) {
 	static const uint8_t cmd_read_y[] = { READ_Y };
 	static const uint8_t zeroes_tx[] = { 0x00, 0x00 };
 	repit: while (!ILI9341_TouchPressed())
-	ILI9341_TouchSelect();
+		ILI9341_TouchSelect();
 	uint32_t avg_x = 0;
 	uint32_t avg_y = 0;
 	uint8_t nsamples = 0;
@@ -130,30 +138,43 @@ uint8_t calibTouch(uint8_t poz) {
 		avg_y += (mirrorY >> 3) & 0xFFF;
 	}
 	ILI9341_TouchUnselect();
-	if (nsamples < 16) goto repit;
+	if (nsamples < 16)
+		goto repit;
 	uint32_t raw_x = (avg_x / 16);
 	uint32_t raw_y = (avg_y / 16);
 	switch (poz) {
-	case 0:
+	case LEFTUP:
 		minX = raw_x;
 		minY = raw_y;
 		buzzerSet(100);
 		break;
-	case 1:
+	case RIGHTUP:
 		maxX = raw_x;
 		minY += raw_y;
 		buzzerSet(100);
 		break;
-	case 2:
+	case LEFTDOWN:
 		minX += raw_x;
 		maxY = raw_y;
 		buzzerSet(100);
 		break;
-	case 3:
+	case RIGHTDOWN:
 		maxX += raw_x;
 		maxY += raw_y;
 		buzzerSet(100);
-		figuringData ();
+		figuringData();
+		break;
+	case CHECKCALIB:
+		buzzerSet(100);
+		if ((((raw_y - minRawY) * ILI9341_TOUCH_SCALE_Y / (maxRawY - minRawY)) < 125 && ((raw_y - minRawY) * ILI9341_TOUCH_SCALE_Y / (maxRawY - minRawY)) > 115) \
+		&& (((raw_x - minRawX) * ILI9341_TOUCH_SCALE_X / (maxRawX - minRawX)) < 165 && ((raw_x - minRawX) * ILI9341_TOUCH_SCALE_X / (maxRawX - minRawX)) > 155)){
+			writeDataToMemory (ADR_DATA_MIN_X, minRawX);
+			writeDataToMemory (ADR_DATA_MAX_X, maxRawX);
+			writeDataToMemory (ADR_DATA_MIN_Y, minRawY);
+			writeDataToMemory (ADR_DATA_MAX_Y, maxRawY);
+		} else {
+			return false;
+		}
 		break;
 	}
 	return true;

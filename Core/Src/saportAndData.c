@@ -2,7 +2,6 @@
 
 //----------------------- переменные из этого файла ----------------------------------//
 uint32_t globalFlag = 0;
-uint32_t globalGUIFlag = 0;
 uint32_t timBuzzer = 0;
 //------------------------------ функции ---------------------------------------------//
 
@@ -55,9 +54,8 @@ void buzzerSet (int16_t time) {
 
 void writeDataToMemory(uint32_t address, uint32_t data) {
 	HAL_FLASH_Unlock();
-	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_EOP | FLASH_FLAG_OPERR | FLASH_FLAG_WRPERR |
-	                         FLASH_FLAG_PGAERR | FLASH_FLAG_PGPERR | FLASH_FLAG_PGSERR);
-	  FLASH_Erase_Sector(FLASH_SECTOR_7, VOLTAGE_RANGE_3);
+	__HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_EOP | FLASH_FLAG_OPERR | FLASH_FLAG_WRPERR | FLASH_FLAG_PGAERR | FLASH_FLAG_PGPERR | FLASH_FLAG_PGSERR);
+	  //FLASH_Erase_Sector(FLASH_SECTOR_7, VOLTAGE_RANGE_3);
 	  HAL_FLASH_Program(FLASH_TYPEPROGRAM_WORD, address, data);
 	  HAL_FLASH_Lock();
 }

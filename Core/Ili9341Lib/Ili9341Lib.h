@@ -10,6 +10,7 @@ extern "C" {
 #include "FontLitll.h"
 #include "FontBig.h"
 #include <stdbool.h>
+#include <string.h>
 #include "saportAndData.h"
 #include "monochromImg.h"
 #include "ColorImg.h"
@@ -90,6 +91,7 @@ void ILI9341_Select();
 void ILI9341_Init(void);
 void ILI9341_DrawPixel(uint16_t x, uint16_t y, uint16_t color);
 void ILI9341_WriteString(uint16_t x, uint16_t y, const char* str, FontDef font, uint16_t color, uint16_t bgcolor);
+void ILI9341_DeleteString(uint16_t x, uint16_t y, const char *str, FontDef font, uint16_t color, uint16_t bgcolor);
 void ILI9341_WriteMyString(uint16_t x, uint16_t y, const char* str,  uint16_t color, uint16_t bgcolor);
 void ILI9341_FillRectangle(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t color);
 void ILI9341_FillScreen(uint16_t color);

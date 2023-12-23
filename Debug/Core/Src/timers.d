@@ -1,8 +1,4 @@
-Core/Src/stm32f4xx_hal_msp.o: ../Core/Src/stm32f4xx_hal_msp.c \
- ../Core/Inc/main.h ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
- ../Core/Inc/stm32f4xx_hal_conf.h \
- ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h \
- ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h \
+Core/Src/timers.o: ../Core/Src/timers.c ../Core/Inc/timers.h \
  ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h \
  ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f411xe.h \
  ../Drivers/CMSIS/Include/core_cm4.h \
@@ -11,6 +7,10 @@ Core/Src/stm32f4xx_hal_msp.o: ../Core/Src/stm32f4xx_hal_msp.c \
  ../Drivers/CMSIS/Include/cmsis_gcc.h \
  ../Drivers/CMSIS/Include/mpu_armv7.h \
  ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h \
+ ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h \
+ ../Core/Inc/stm32f4xx_hal_conf.h \
+ ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h \
+ ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc_ex.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h \
@@ -27,21 +27,8 @@ Core/Src/stm32f4xx_hal_msp.o: ../Core/Src/stm32f4xx_hal_msp.c \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h \
  ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h \
- ../Core/Inc/work.h ../Core/Inc/saportAndData.h \
- C:/Users/Solov/STM32CubeIDE/workspace_1.11.0/PulseGeneratorILI9341/Core/Ili9341Lib/Ili9341LibTouch.h \
- ../Core/Inc/saportAndData.h ../Core/Inc/GUI.h \
- C:/Users/Solov/STM32CubeIDE/workspace_1.11.0/PulseGeneratorILI9341/Core/Ili9341Lib/ili9341Lib.h \
- C:/Users/Solov/STM32CubeIDE/workspace_1.11.0/PulseGeneratorILI9341/Core/Ili9341Lib/FontLitll.h \
- C:/Users/Solov/STM32CubeIDE/workspace_1.11.0/PulseGeneratorILI9341/Core/Ili9341Lib/FontBig.h \
- C:/Users/Solov/STM32CubeIDE/workspace_1.11.0/PulseGeneratorILI9341/Core/Ili9341Lib/monochromImg.h \
- C:/Users/Solov/STM32CubeIDE/workspace_1.11.0/PulseGeneratorILI9341/Core/Ili9341Lib/ColorImg.h \
- C:/Users/Solov/STM32CubeIDE/workspace_1.11.0/PulseGeneratorILI9341/Core/Ili9341Lib/ColorImg.h \
- ../Core/Inc/timers.h
-../Core/Inc/main.h:
-../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
-../Core/Inc/stm32f4xx_hal_conf.h:
-../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h:
-../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h:
+ ../Core/Inc/saportAndData.h
+../Core/Inc/timers.h:
 ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h:
 ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f411xe.h:
 ../Drivers/CMSIS/Include/core_cm4.h:
@@ -50,6 +37,10 @@ Core/Src/stm32f4xx_hal_msp.o: ../Core/Src/stm32f4xx_hal_msp.c \
 ../Drivers/CMSIS/Include/cmsis_gcc.h:
 ../Drivers/CMSIS/Include/mpu_armv7.h:
 ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/system_stm32f4xx.h:
+../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h:
+../Core/Inc/stm32f4xx_hal_conf.h:
+../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h:
+../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy/stm32_hal_legacy.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc_ex.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_gpio.h:
@@ -66,15 +57,4 @@ Core/Src/stm32f4xx_hal_msp.o: ../Core/Src/stm32f4xx_hal_msp.c \
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim.h:
 ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_tim_ex.h:
-../Core/Inc/work.h:
 ../Core/Inc/saportAndData.h:
-C:/Users/Solov/STM32CubeIDE/workspace_1.11.0/PulseGeneratorILI9341/Core/Ili9341Lib/Ili9341LibTouch.h:
-../Core/Inc/saportAndData.h:
-../Core/Inc/GUI.h:
-C:/Users/Solov/STM32CubeIDE/workspace_1.11.0/PulseGeneratorILI9341/Core/Ili9341Lib/ili9341Lib.h:
-C:/Users/Solov/STM32CubeIDE/workspace_1.11.0/PulseGeneratorILI9341/Core/Ili9341Lib/FontLitll.h:
-C:/Users/Solov/STM32CubeIDE/workspace_1.11.0/PulseGeneratorILI9341/Core/Ili9341Lib/FontBig.h:
-C:/Users/Solov/STM32CubeIDE/workspace_1.11.0/PulseGeneratorILI9341/Core/Ili9341Lib/monochromImg.h:
-C:/Users/Solov/STM32CubeIDE/workspace_1.11.0/PulseGeneratorILI9341/Core/Ili9341Lib/ColorImg.h:
-C:/Users/Solov/STM32CubeIDE/workspace_1.11.0/PulseGeneratorILI9341/Core/Ili9341Lib/ColorImg.h:
-../Core/Inc/timers.h:

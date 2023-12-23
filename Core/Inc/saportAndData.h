@@ -13,21 +13,16 @@ extern "C" {
 #define NO_PRESSED                      0
 #define PRESSED                         1
 
+#define NPN                             1
+#define PNP                             0
+
 #define TOUCH_DISPLAY                   0x00000001
 #define ONE_TOUCH                       0x00000002
 #define ONE_BUZZER                      0x00000004
-
-#define AREA1_PRESS                     0x00000001
-#define AREA2_PRESS                     0x00000002
-#define AREA3_PRESS                     0x00000004
-#define BUTTON1_PRESS                   0x00000008
-#define BUTTON2_PRESS                   0x00000010
-#define BUTTON3_PRESS                   0x00000020
-#define BUTTON4_PRESS                   0x00000040
-#define BUTTON5_PRESS                   0x00000080
-#define BUTTON6_PRESS                   0x00000100
-#define BUTTON7_PRESS                   0x00000200
-
+#define AREA1_PRESS                     0x00000008
+#define AREA2_PRESS                     0x00000010
+#define AREA3_PRESS                     0x00000020
+#define BUTTON_HOLD                     0x00000040
 
 #define SET_FLAG(numFlag, variable)    (variable |= numFlag)
 #define RESET_FLAG(numFlag, variable)  (variable &= ~(numFlag))
@@ -67,13 +62,47 @@ typedef struct {
     	uint16_t impuls;
     	uint16_t pause;
     	uint16_t count;
+    	uint16_t changeCount;
     	uint8_t  unitImpuls;
     	uint8_t  unitPause;
-    	uint8_t  flagInfinity;
-    	uint8_t  NPN_PNP;
+    	//uint8_t  flagInfinity;
+    	uint8_t  NPNTranzistor;
+    	uint8_t  PNPTranzistor;
     	uint8_t  power;
-    	uint8_t  changeParametrs;
+    	//uint8_t  changeParametrs;
    };
+
+enum {
+	LEFTUP,
+	RIGHTUP,
+	LEFTDOWN,
+	RIGHTDOWN,
+	CHECKCALIB,
+	CALIBOK,
+	ERRCALIB,
+};
+
+//------------------------------ примечания ------------------------------------------//
+/*
+Pinout:
+A0  -   Buzzer
+A1  -   NPN
+A2  -   PNP
+B12 -   T_IRQ
+B14 -   T_DO
+B15 -   T_DIN
+A8  -   T_CS
+B13 -   T_CLK
+A6  -   SDO
+A4  -   LED
+A5  -   SCK
+A7  -   SDI
+B0  -   DC
+B1  -   RESET
+B2  -   CS
+
+
+*/
 
 #ifdef __cplusplus
 }
