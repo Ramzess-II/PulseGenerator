@@ -2,15 +2,27 @@
 
 //----------------------- переменные из других файлов --------------------------------//
 extern uint32_t globalFlag;
-//extern uint32_t globalGUIFlag;
 extern struct ChangParamDevice ParamDevice;
 //----------------------- переменные из этого файла ----------------------------------//
-char bufSpi[20] = { };
+char bufSpi[40] = { };
 char *unitTXT[3] = { "us", "ms", "s   ", };
-
+char *unitFreq[3] = { "Hz ", "kHz", "MHz", };
+uint32_t multiplicationFreq[3] = { 1000000, 1000, 1 };
 uint16_t x, y, countSpeed = 1;
 uint32_t timBigArea = 0, timButtonPress = 0, timHoldButtonPress = 0;
 //------------------------------ функции ---------------------------------------------//
+void screenSaver (void) {
+	ILI9341_FillScreen(ILI9341_BLACK);
+	strcpy(bufSpi, "PULSE");
+	ILI9341_WriteMyString(105, 76, bufSpi, ILI9341_GREEN, ILI9341_BLACK);
+	strcpy(bufSpi, "GENERATOR");
+	ILI9341_WriteMyString(65, 120, bufSpi, ILI9341_GREEN, ILI9341_BLACK);
+	ILI9341_WriteString(250, 220, "Ver1.1", Font_11x18, ILI9341_YELLOW, ILI9341_BLACK);
+	drawSomePixelRoundRect(40, 66, 240, 108, 4, 2, ILI9341_YELLOW);
+	HAL_Delay(2000);
+	buzzerSet(100);
+}
+
 void GUICalibration(uint8_t pozition) {
 	switch (pozition) {
 	case LEFTUP:
@@ -76,27 +88,41 @@ void startDisplay(void) {
 }
 
 void printFreeq(void) {
-	strcpy(bufSpi, "Freq = 25Mh");
+	uint8_t count = 0;
+	float freq = 0;
+	freq = (1 / (((float) ParamDevice.impuls / (float) multiplicationFreq[ParamDevice.unitImpuls]) +
+			((float) ParamDevice.pause / (float) multiplicationFreq[ParamDevice.unitPause])));
+	if (freq >= 1000000) {
+		count = 2;
+		freq = freq / 1000000;
+	}
+	if (freq >= 1000) {
+		count = 1;
+		freq = freq / 1000;
+	}
+	strcpy(bufSpi, "Freq=");
 	ILI9341_WriteString(10, 2, bufSpi, Font_11x18, ILI9341_WHITE, ILI9341_BLUE);
+	sprintf(bufSpi, "%06.2f%s", freq, unitFreq[count]);
+	ILI9341_WriteString(65, 2, bufSpi, Font_11x18, ILI9341_WHITE, ILI9341_BLUE);
 }
 
-void printTypeOutput (void) {
-	ILI9341_FillRectangle(160, 0, 160, 22, ILI9341_BLUE);
+void printTypeOutput(void) {
+	ILI9341_FillRectangle(190, 0, 160, 22, ILI9341_BLUE);
 	if (ParamDevice.NPNTranzistor && !ParamDevice.PNPTranzistor) {
-		strcpy(bufSpi, "Out: NPN");
-		ILI9341_WriteString(170, 2, bufSpi, Font_11x18, ILI9341_WHITE, ILI9341_BLUE);
+		strcpy(bufSpi, "Out:NPN");
+		ILI9341_WriteString(190, 2, bufSpi, Font_11x18, ILI9341_WHITE, ILI9341_BLUE);
 	}
 	if (ParamDevice.NPNTranzistor && ParamDevice.PNPTranzistor) {
-		strcpy(bufSpi, "Out: NPN+PNP");
-		ILI9341_WriteString(170, 2, bufSpi, Font_11x18, ILI9341_WHITE, ILI9341_BLUE);
+		strcpy(bufSpi, "Out:NPN+PNP");
+		ILI9341_WriteString(190, 2, bufSpi, Font_11x18, ILI9341_WHITE, ILI9341_BLUE);
 	}
 	if (!ParamDevice.NPNTranzistor && ParamDevice.PNPTranzistor) {
-		strcpy(bufSpi, "Out: PNP");
-		ILI9341_WriteString(170, 2, bufSpi, Font_11x18, ILI9341_WHITE, ILI9341_BLUE);
+		strcpy(bufSpi, "Out:PNP");
+		ILI9341_WriteString(190, 2, bufSpi, Font_11x18, ILI9341_WHITE, ILI9341_BLUE);
 	}
 	if (!ParamDevice.NPNTranzistor && !ParamDevice.PNPTranzistor) {
-		strcpy(bufSpi, "Out: No out");
-		ILI9341_WriteString(170, 2, bufSpi, Font_11x18, ILI9341_WHITE, ILI9341_BLUE);
+		strcpy(bufSpi, "Out:No out");
+		ILI9341_WriteString(190, 2, bufSpi, Font_11x18, ILI9341_WHITE, ILI9341_BLUE);
 	}
 }
 
@@ -139,7 +165,7 @@ void printColorImage(uint16_t x, uint16_t y, uint16_t w, uint16_t h,
 }
 
 void mainDisplayPrint(void) {
-	ILI9341_FillRectangle(75, 20, 220, 20, ILI9341_BLACK);
+	ILI9341_FillScreen(ILI9341_BLACK);
 	ILI9341_FillRectangle(0, 0, 320, 22, ILI9341_BLUE);
 	printTypeOutput();
 	printFreeq();
@@ -153,11 +179,7 @@ void mainDisplayPrint(void) {
 	ILI9341_DrawMonochromeImage(260, 43, ILI9341_YELLOW, ILI9341_BLACK, tranzistor);
 	NPN_PNPButton(NPN, PRESSED);
 	NPN_PNPButton(PNP, NO_PRESSED);
-}
-
-void workDisplay(void) {
-	mainDisplayPrint();
-	/*if(ILI9341_TouchGetCoordinates(&x, &y)) {
+    /*if(ILI9341_TouchGetCoordinates(&x, &y)) {
 	 ILI9341_DrawPixel(x, y, ILI9341_WHITE);
 	 }*/
 }
@@ -186,7 +208,7 @@ void checkstrokeArea(void) {
 	}
 }
 
-void endOperationWindow (uint8_t onOff) {
+void endOperationWindow(uint8_t onOff) {
 	if (onOff) {
 		ILI9341_FillRectangle(40, 60, 180, 60, ILI9341_BLACK);
 		drawSomePixelRoundRect(38, 58, 182, 62, 3, 2, ILI9341_YELLOW);
@@ -194,7 +216,7 @@ void endOperationWindow (uint8_t onOff) {
 		ILI9341_WriteMyString(48, 65, bufSpi, ILI9341_RED, ILI9341_BLACK);
 	} else {
 		ILI9341_FillRectangle(38, 58, 182, 62, ILI9341_BLACK);
-		printTImpulse ();
+		printTImpulse();
 		printTPause();
 		checkstrokeArea();
 	}
@@ -203,17 +225,20 @@ void endOperationWindow (uint8_t onOff) {
 void powerButton(void) {
 	if (!READ_FLAG(ONE_TOUCH, globalFlag)) {
 		SET_FLAG(ONE_TOUCH, globalFlag);
-		if (ParamDevice.power) {
-			ParamDevice.power = false;
-			printColorImage(246, 182, 50, 50, PRESSED, image_powerGreen);
-			endOperationWindow (0);
-		} else {
-			ParamDevice.power = true;
-			ParamDevice.changeCount = ParamDevice.count;
-			printColorImage(246, 182, 50, 50, NO_PRESSED, image_powerRed);
-			endOperationWindow (1);
+		if (ParamDevice.NPNTranzistor || ParamDevice.PNPTranzistor) {
+			if (ParamDevice.power) {
+				ParamDevice.power = false;
+				printColorImage(246, 182, 50, 50, NO_PRESSED, image_powerGreen);
+			} else {
+				ParamDevice.power = true;
+				printColorImage(246, 182, 50, 50, PRESSED, image_powerRed);
+			}
 		}
 	}
+}
+
+void externalPowerOff(void) {
+	printColorImage(246, 182, 50, 50, NO_PRESSED, image_powerGreen);
 }
 
 void rangeMinMax(uint16_t *data, uint16_t count, uint16_t plus_minus, uint16_t min, uint16_t max) {
@@ -242,14 +267,16 @@ void changeData(uint16_t count, uint16_t plus_minus) {
 			rangeMinMax(&ParamDevice.impuls, count, plus_minus, 1, 20);
 		}
 		printTImpulse();
+		printFreeq();
 	}
 	if (READ_FLAG(AREA2_PRESS, globalFlag)) {
-		if (ParamDevice.unitPause != 2){
+		if (ParamDevice.unitPause != 2) {
 			rangeMinMax(&ParamDevice.pause, count, plus_minus, 1, 999);
 		} else {
 			rangeMinMax(&ParamDevice.pause, count, plus_minus, 1, 20);
 		}
 		printTPause();
+		printFreeq();
 	}
 	if (READ_FLAG(AREA3_PRESS, globalFlag)) {
 		rangeMinMax(&ParamDevice.count, count, plus_minus, 0, 255);
@@ -277,7 +304,7 @@ void changeParamPlusMinus(uint16_t plus_minus) {
 		SET_FLAG(TOUCH_DISPLAY, globalFlag);
 		timHoldButtonPress = SPPED5;
 	}
-	if (!READ_FLAG(ONE_TOUCH, globalFlag) ) {
+	if (!READ_FLAG(ONE_TOUCH, globalFlag)) {
 		changeData(1, plus_minus);
 	} else {
 		if (countSpeed >= 2) {
@@ -296,22 +323,27 @@ void togleUnits(void) {
 		SET_FLAG(ONE_TOUCH, globalFlag);
 
 		if (READ_FLAG(AREA1_PRESS, globalFlag)) {
-			if (ParamDevice.unitImpuls < 2)ParamDevice.unitImpuls++;
-			else ParamDevice.unitImpuls = 0;
+			if (ParamDevice.unitImpuls < 2)
+				ParamDevice.unitImpuls++;
+			else
+				ParamDevice.unitImpuls = 0;
 			printTImpulse();
 			if (ParamDevice.unitImpuls == 2 && ParamDevice.impuls > 20) {
 				ParamDevice.impuls = 20;
-				printTImpulse();
 			}
+			printTImpulse();
+			printFreeq();
 		}
 		if (READ_FLAG(AREA2_PRESS, globalFlag)) {
-			if (ParamDevice.unitPause < 2)ParamDevice.unitPause++;
-			else ParamDevice.unitPause = 0;
+			if (ParamDevice.unitPause < 2)
+				ParamDevice.unitPause++;
+			else
+				ParamDevice.unitPause = 0;
 			if (ParamDevice.unitPause == 2 && ParamDevice.pause > 20) {
 				ParamDevice.pause = 20;
-				printTPause();
 			}
 			printTPause();
+			printFreeq();
 		}
 	}
 }
@@ -346,10 +378,10 @@ void NPN_PNPButton(uint8_t type, uint8_t status) {
 	printTypeOutput();
 }
 
-void setParamNPN_PNP (uint8_t type) {
+void setParamNPN_PNP(uint8_t type) {
 	if (!READ_FLAG(ONE_TOUCH, globalFlag)) {
 		SET_FLAG(ONE_TOUCH, globalFlag);
-		if (type == NPN){
+		if (type == NPN) {
 			if (ParamDevice.NPNTranzistor) {
 				NPN_PNPButton(NPN, NO_PRESSED);
 			} else {
@@ -375,49 +407,50 @@ void checkButtonPress(void) {
 				buzzerSet(100);
 			}
 
-			if (checkAreaTouch(x, y, 15, 30, 235, 35)) {
-				RESET_FLAG(AREA2_PRESS|AREA3_PRESS, globalFlag);
-				SET_FLAG(AREA1_PRESS, globalFlag);
-				checkstrokeArea();
-			}
-
-			if (checkAreaTouch(x, y, 15, 78, 235, 35)) {
-				RESET_FLAG(AREA1_PRESS|AREA3_PRESS, globalFlag);
-				SET_FLAG(AREA2_PRESS, globalFlag);
-				checkstrokeArea();
-			}
-
-			if (checkAreaTouch(x, y, 15, 126, 235, 35)) {
-				RESET_FLAG(AREA1_PRESS|AREA2_PRESS, globalFlag);
-				SET_FLAG(AREA3_PRESS, globalFlag);
-				checkstrokeArea();
-			}
-
-			if (checkAreaTouch(x, y, 24, 182, 50, 50)) {
-				printColorImage(24, 182, 50, 50, PRESSED, image_Plus);
-				changeParamPlusMinus(PLUS);
-			}
-
-			if (checkAreaTouch(x, y, 172, 182, 50, 50)) {
-				printColorImage(172, 182, 50, 50, PRESSED, image_Minus);
-				changeParamPlusMinus(MINUS);
-			}
-
-			if (checkAreaTouch(x, y, 98, 182, 50, 50)) {
-				printColorImage(98, 182, 50, 50, PRESSED, image_Arrow);
-				togleUnits();
-			}
-
 			if (checkAreaTouch(x, y, 246, 182, 50, 50)) {
 				powerButton();
 			}
+			if (!ParamDevice.power) {
+				if (checkAreaTouch(x, y, 15, 30, 235, 35)) {
+					RESET_FLAG(AREA2_PRESS|AREA3_PRESS, globalFlag);
+					SET_FLAG(AREA1_PRESS, globalFlag);
+					checkstrokeArea();
+				}
 
-			if (checkAreaTouch(x, y, 260, 102, 50, 26)) {
-				setParamNPN_PNP (NPN);
-			}
+				if (checkAreaTouch(x, y, 15, 78, 235, 35)) {
+					RESET_FLAG(AREA1_PRESS|AREA3_PRESS, globalFlag);
+					SET_FLAG(AREA2_PRESS, globalFlag);
+					checkstrokeArea();
+				}
 
-			if (checkAreaTouch(x, y, 260, 140, 50, 26)) {
-				setParamNPN_PNP (PNP);
+				if (checkAreaTouch(x, y, 15, 126, 235, 35)) {
+					RESET_FLAG(AREA1_PRESS|AREA2_PRESS, globalFlag);
+					SET_FLAG(AREA3_PRESS, globalFlag);
+					checkstrokeArea();
+				}
+
+				if (checkAreaTouch(x, y, 24, 182, 50, 50)) {
+					printColorImage(24, 182, 50, 50, PRESSED, image_Plus);
+					changeParamPlusMinus(PLUS);
+				}
+
+				if (checkAreaTouch(x, y, 172, 182, 50, 50)) {
+					printColorImage(172, 182, 50, 50, PRESSED, image_Minus);
+					changeParamPlusMinus(MINUS);
+				}
+
+				if (checkAreaTouch(x, y, 98, 182, 50, 50)) {
+					printColorImage(98, 182, 50, 50, PRESSED, image_Arrow);
+					togleUnits();
+				}
+
+				if (checkAreaTouch(x, y, 260, 102, 50, 26)) {
+					setParamNPN_PNP(NPN);
+				}
+
+				if (checkAreaTouch(x, y, 260, 140, 50, 26)) {
+					setParamNPN_PNP(PNP);
+				}
 			}
 		}
 		timBigArea = 5000;

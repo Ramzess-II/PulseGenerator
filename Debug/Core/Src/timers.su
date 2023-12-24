@@ -1,0 +1,2 @@
+../Core/Src/timers.c:10:6:setTimAndStart	4	static
+../Core/Src/timers.c:41:6:timerOff	4	static

@@ -45,7 +45,7 @@ SPI_HandleTypeDef hspi2;
 TIM_HandleTypeDef htim5;
 
 /* USER CODE BEGIN PV */
-uint32_t countPWM = 10;
+
 
 /* USER CODE END PV */
 
@@ -99,11 +99,6 @@ int main(void)
   MX_SPI2_Init();
   MX_TIM5_Init();
   /* USER CODE BEGIN 2 */
-  __HAL_TIM_CLEAR_FLAG(&htim5, TIM_SR_UIF); // очищаем флаг
-  HAL_TIM_Base_Start(&htim5);
-  HAL_TIM_PWM_Start_IT(&htim5, TIM_CHANNEL_2);
-  HAL_TIM_PWM_Start(&htim5, TIM_CHANNEL_3);
-  //TIM5->CCR2 = 10000;
   doWork ();
   /* USER CODE END 2 */
 
@@ -154,11 +149,11 @@ void SystemClock_Config(void)
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
-  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV2;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_1) != HAL_OK)
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_3) != HAL_OK)
   {
     Error_Handler();
   }

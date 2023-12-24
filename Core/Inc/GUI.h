@@ -25,12 +25,15 @@ extern "C" {
 
 //----------------------- объявим функции ------------------------------------//
 void checkButtonPress (void);
-void workDisplay (void);
+void mainDisplayPrint (void);
+void screenSaver (void);
 void startDisplay (void);
 void GUIPostHandler (void);
 void GUICalibration (uint8_t pozition);
 void setOK (uint8_t flag);
 void NPN_PNPButton(uint8_t type, uint8_t status);
+void externalPowerOff (void);
+void endOperationWindow (uint8_t onOff);
 //----------------------- объявим структуры ----------------------------------//
 
 

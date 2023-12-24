@@ -1,4 +1,3 @@
 ../Core/Src/work.c:22:6:doWork	8	static
-../Core/Src/work.c:29:6:Work	8	static
-../Core/Src/work.c:33:6:setPowerOffButton	4	static
-../Core/Src/work.c:38:6:calibration	8	static
+../Core/Src/work.c:30:6:Work	8	static
+../Core/Src/work.c:60:6:calibration	8	static

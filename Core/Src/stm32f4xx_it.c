@@ -41,8 +41,9 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-extern uint32_t globalFlag, countPWM;
-extern uint32_t timBigArea, timButtonPress, timHoldButtonPress, timToDisplay, timBuzzer;
+extern uint32_t globalFlag;
+extern uint32_t timBigArea, timButtonPress, timHoldButtonPress, timToDisplay, timBuzzer,timToEndOperation;
+extern struct ChangParamDevice ParamDevice;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -188,6 +189,7 @@ void SysTick_Handler(void)
 	if (timButtonPress) timButtonPress --;
 	if (timHoldButtonPress) timHoldButtonPress --;
 	if (timToDisplay) timToDisplay --;
+	if (timToEndOperation > 1) timToEndOperation --;
 	if (timBuzzer) timBuzzer --;
 	if (timBuzzer == 10) SET_BIT(GPIOA->BSRR, GPIO_BSRR_BR_0);
   /* USER CODE END SysTick_IRQn 0 */
@@ -212,13 +214,18 @@ void TIM5_IRQHandler(void)
   /* USER CODE BEGIN TIM5_IRQn 0 */
 
   /* USER CODE END TIM5_IRQn 0 */
-  HAL_TIM_IRQHandler(&htim5);
+  //HAL_TIM_IRQHandler(&htim5); гавно хал
   /* USER CODE BEGIN TIM5_IRQn 1 */
-  if (countPWM) countPWM --;
-  if(!countPWM){
-	  HAL_TIM_PWM_Stop_IT(&htim5, TIM_CHANNEL_2);
-	  HAL_TIM_PWM_Stop(&htim5, TIM_CHANNEL_3);
-	  HAL_TIM_Base_Stop(&htim5);
+  CLEAR_BIT(TIM5->SR, TIM_SR_CC2IF|TIM_SR_CC3IF);
+  if (ParamDevice.changeCount) ParamDevice.changeCount --;
+  if(!ParamDevice.changeCount && !ParamDevice.flagInfinity && !READ_FLAG(END_OPERATION, globalFlag)){
+	  //HAL_TIM_PWM_Stop_IT(&htim5, TIM_CHANNEL_2);
+	  //HAL_TIM_PWM_Stop(&htim5, TIM_CHANNEL_3);  гавно хал
+	  //HAL_TIM_Base_Stop(&htim5);
+	  CLEAR_BIT(TIM5->CCER, TIM_CCER_CC2E|TIM_CCER_CC3E);
+	  CLEAR_BIT(TIM5->DIER, TIM_DIER_CC2IE|TIM_DIER_CC3IE);
+	  CLEAR_BIT(TIM5->CR1, TIM_CR1_CEN);
+	  SET_FLAG (END_OPERATION, globalFlag);
   }
   /* USER CODE END TIM5_IRQn 1 */
 }

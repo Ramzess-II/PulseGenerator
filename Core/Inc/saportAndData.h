@@ -23,6 +23,8 @@ extern "C" {
 #define AREA2_PRESS                     0x00000010
 #define AREA3_PRESS                     0x00000020
 #define BUTTON_HOLD                     0x00000040
+#define END_OPERATION                   0x00000080
+#define WORKING                         0x00000100  //??
 
 #define SET_FLAG(numFlag, variable)    (variable |= numFlag)
 #define RESET_FLAG(numFlag, variable)  (variable &= ~(numFlag))
@@ -65,11 +67,10 @@ typedef struct {
     	uint16_t changeCount;
     	uint8_t  unitImpuls;
     	uint8_t  unitPause;
-    	//uint8_t  flagInfinity;
+    	uint8_t  flagInfinity;
     	uint8_t  NPNTranzistor;
     	uint8_t  PNPTranzistor;
     	uint8_t  power;
-    	//uint8_t  changeParametrs;
    };
 
 enum {
