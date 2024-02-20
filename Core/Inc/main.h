@@ -59,20 +59,22 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define Buzzer_Pin GPIO_PIN_0
-#define Buzzer_GPIO_Port GPIOA
-#define Led_Display_Pin GPIO_PIN_4
-#define Led_Display_GPIO_Port GPIOA
 #define Data_Comand_Pin GPIO_PIN_0
 #define Data_Comand_GPIO_Port GPIOB
 #define Reset_Display_Pin GPIO_PIN_1
 #define Reset_Display_GPIO_Port GPIOB
 #define CS_Display_Pin GPIO_PIN_2
 #define CS_Display_GPIO_Port GPIOB
-#define IRQ_Touch_Pin GPIO_PIN_12
-#define IRQ_Touch_GPIO_Port GPIOB
+#define Led_Display_Pin GPIO_PIN_12
+#define Led_Display_GPIO_Port GPIOB
 #define CS_Touch_Pin GPIO_PIN_8
 #define CS_Touch_GPIO_Port GPIOA
+#define IRQ_Touch_Pin GPIO_PIN_9
+#define IRQ_Touch_GPIO_Port GPIOA
+#define LEDS_Pin GPIO_PIN_10
+#define LEDS_GPIO_Port GPIOA
+#define Buzzer_Pin GPIO_PIN_9
+#define Buzzer_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 

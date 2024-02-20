@@ -33,8 +33,8 @@ extern SPI_HandleTypeDef ILI9341_SPI_PORT;
 #define ILI9341_CS_GPIO_Port  GPIOB
 #define ILI9341_DC_Pin        GPIO_PIN_0
 #define ILI9341_DC_GPIO_Port  GPIOB
-#define Led_Display_Pin       GPIO_PIN_4
-#define Led_Display_GPIO_Port GPIOA
+#define Led_Display_Pin       GPIO_PIN_12
+#define Led_Display_GPIO_Port GPIOB
 
 #define CS_SET                SET_BIT(GPIOB->BSRR, GPIO_BSRR_BS_2)
 #define CS_RESET              SET_BIT(GPIOB->BSRR, GPIO_BSRR_BR_2)

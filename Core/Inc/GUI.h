@@ -34,6 +34,8 @@ void setOK (uint8_t flag);
 void NPN_PNPButton(uint8_t type, uint8_t status);
 void externalPowerOff (void);
 void endOperationWindow (uint8_t onOff);
+void overCurrent (uint8_t onOff);
+void printCurrent (float current);
 //----------------------- объявим структуры ----------------------------------//
 
 

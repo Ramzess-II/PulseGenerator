@@ -42,7 +42,7 @@
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
 extern uint32_t globalFlag;
-extern uint32_t timBigArea, timButtonPress, timHoldButtonPress, timToDisplay, timBuzzer,timToEndOperation;
+extern uint32_t timBigArea, timButtonPress, timHoldButtonPress, timToOvercurrent, timBuzzer,timToEndOperation,timToCurrent;
 extern struct ChangParamDevice ParamDevice;
 /* USER CODE END PV */
 
@@ -188,10 +188,11 @@ void SysTick_Handler(void)
 	if (timBigArea) timBigArea --;
 	if (timButtonPress) timButtonPress --;
 	if (timHoldButtonPress) timHoldButtonPress --;
-	if (timToDisplay) timToDisplay --;
+	if (timToOvercurrent > 1) timToOvercurrent --;
 	if (timToEndOperation > 1) timToEndOperation --;
+	if (timToCurrent) timToCurrent --;
 	if (timBuzzer) timBuzzer --;
-	if (timBuzzer == 10) SET_BIT(GPIOA->BSRR, GPIO_BSRR_BR_0);
+	if (timBuzzer == 10) SET_BIT(GPIOB->BSRR, GPIO_BSRR_BR_9);
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */
@@ -214,18 +215,21 @@ void TIM5_IRQHandler(void)
   /* USER CODE BEGIN TIM5_IRQn 0 */
 
   /* USER CODE END TIM5_IRQn 0 */
-  //HAL_TIM_IRQHandler(&htim5); гавно хал
+  HAL_TIM_IRQHandler(&htim5);
   /* USER CODE BEGIN TIM5_IRQn 1 */
-  CLEAR_BIT(TIM5->SR, TIM_SR_CC2IF|TIM_SR_CC3IF);
-  if (ParamDevice.changeCount) ParamDevice.changeCount --;
-  if(!ParamDevice.changeCount && !ParamDevice.flagInfinity && !READ_FLAG(END_OPERATION, globalFlag)){
+  CLEAR_BIT(TIM5->SR, TIM_SR_CC2IF|TIM_SR_CC3IF);                                                        // сбросими руками флаг прерывания
+  if (ParamDevice.changeCount) ParamDevice.changeCount --;                                               // отнимаем количество отработаных импульсов
+  if(!ParamDevice.changeCount && !ParamDevice.flagInfinity && !READ_FLAG(END_OPERATION, globalFlag)){    // заходим только если у нас не бесконечность и досчитали до конца один раз
 	  //HAL_TIM_PWM_Stop_IT(&htim5, TIM_CHANNEL_2);
 	  //HAL_TIM_PWM_Stop(&htim5, TIM_CHANNEL_3);  гавно хал
 	  //HAL_TIM_Base_Stop(&htim5);
-	  CLEAR_BIT(TIM5->CCER, TIM_CCER_CC2E|TIM_CCER_CC3E);
-	  CLEAR_BIT(TIM5->DIER, TIM_DIER_CC2IE|TIM_DIER_CC3IE);
-	  CLEAR_BIT(TIM5->CR1, TIM_CR1_CEN);
-	  SET_FLAG (END_OPERATION, globalFlag);
+	  CLEAR_BIT(TIM5->CCMR1, TIM_CCMR1_OC2M);                                                            // очистим регистр
+	  CLEAR_BIT(TIM5->CCMR2, TIM_CCMR2_OC3M);                                                            // очистим регистр
+	  SET_BIT(TIM5->CCMR1, 0b100 << TIM_CCMR1_OC2M_Pos);                                                 // ноль на выходе Force inactive level
+      SET_BIT(TIM5->CCMR2, 0b100 << TIM_CCMR2_OC3M_Pos);                                                 // ноль на выходе Force inactive level
+	  CLEAR_BIT(TIM5->DIER, TIM_DIER_CC2IE|TIM_DIER_CC3IE);                                              // выключим прерывания
+	  CLEAR_BIT(TIM5->CR1, TIM_CR1_CEN);                                                                 // выключим таймер в место хала
+	  SET_FLAG (END_OPERATION, globalFlag);                                                              // поднимем флаг окончания
   }
   /* USER CODE END TIM5_IRQn 1 */
 }

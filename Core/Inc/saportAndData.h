@@ -16,6 +16,9 @@ extern "C" {
 #define NPN                             1
 #define PNP                             0
 
+#define FILTRADC                        64
+#define MAX_CURRENT                     2
+
 #define TOUCH_DISPLAY                   0x00000001
 #define ONE_TOUCH                       0x00000002
 #define ONE_BUZZER                      0x00000004
@@ -24,19 +27,30 @@ extern "C" {
 #define AREA3_PRESS                     0x00000020
 #define BUTTON_HOLD                     0x00000040
 #define END_OPERATION                   0x00000080
-#define WORKING                         0x00000100  //??
+#define WORKING                         0x00000100
 
 #define SET_FLAG(numFlag, variable)    (variable |= numFlag)
 #define RESET_FLAG(numFlag, variable)  (variable &= ~(numFlag))
 #define READ_FLAG(numFlag, variable)   (variable & (numFlag))
 
-#define BUZER_SET             SET_BIT(GPIOA->BSRR, GPIO_BSRR_BS_0)
-#define BUZER_RESET           SET_BIT(GPIOA->BSRR, GPIO_BSRR_BR_0)
+#define BUZER_SET             SET_BIT(GPIOB->BSRR, GPIO_BSRR_BS_9)
+#define BUZER_RESET           SET_BIT(GPIOB->BSRR, GPIO_BSRR_BR_9)
 
-#define ADR_DATA_MIN_X      0x0807FFF0
+#define ADR_DATA_MIN_X      0x0807FFF0               // ячейка памяти с адрессом минимального значения по х
 #define ADR_DATA_MAX_X      0x0807FFF4
 #define ADR_DATA_MIN_Y      0x0807FFF8
 #define ADR_DATA_MAX_Y      0x0807FFFC
+
+// Warning! Use SPI bus with < 1.3 Mbit speed, better ~650 Kbit to be save.
+#define ILI9341_TOUCH_SPI_PORT hspi2
+extern SPI_HandleTypeDef ILI9341_TOUCH_SPI_PORT;
+
+#define ILI9341_TOUCH_IRQ_Pin       GPIO_PIN_9
+#define ILI9341_TOUCH_IRQ_GPIO_Port GPIOA
+#define ILI9341_TOUCH_CS_Pin        GPIO_PIN_8
+#define ILI9341_TOUCH_CS_GPIO_Port  GPIOA
+
+#define READ_TOUCH_IRQ              READ_BIT(ILI9341_TOUCH_IRQ_GPIO_Port->IDR, ILI9341_TOUCH_IRQ_Pin)
 
 //----------------------- объявим функции ------------------------------------//
 int16_t myAbs(int num);
@@ -86,16 +100,18 @@ enum {
 //------------------------------ примечания ------------------------------------------//
 /*
 Pinout:
-A0  -   Buzzer
-A1  -   NPN
-A2  -   PNP
-B12 -   T_IRQ
+B9  -   Buzzer
+A1  -   PNP
+A2  -   NPN
+A3  -   ADC
+A9  -   T_IRQ
+A10 -   LEDS
 B14 -   T_DO
 B15 -   T_DIN
 A8  -   T_CS
 B13 -   T_CLK
 A6  -   SDO
-A4  -   LED
+B12 -   LED
 A5  -   SCK
 A7  -   SDI
 B0  -   DC

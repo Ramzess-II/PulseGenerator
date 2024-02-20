@@ -39,22 +39,27 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+ADC_HandleTypeDef hadc1;
+DMA_HandleTypeDef hdma_adc1;
+
 SPI_HandleTypeDef hspi1;
 SPI_HandleTypeDef hspi2;
 
 TIM_HandleTypeDef htim5;
 
 /* USER CODE BEGIN PV */
-
-
+uint16_t adcBuf [FILTRADC] = {0};
+//uint32_t * ptrBuf = adcBuf;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_DMA_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_SPI2_Init(void);
 static void MX_TIM5_Init(void);
+static void MX_ADC1_Init(void);
 /* USER CODE BEGIN PFP */
 
 /* USER CODE END PFP */
@@ -74,7 +79,7 @@ static void MX_TIM5_Init(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-  SYSCFG->MEMRMP = 0x3;    // для запуска из SRAM
+  //SYSCFG->MEMRMP = 0x3;    // для запуска из SRAM
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -95,10 +100,19 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_SPI1_Init();
   MX_SPI2_Init();
   MX_TIM5_Init();
+  MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
+  SET_BIT(TIM5->CCER, TIM_CCER_CC2E);                     // включим выходы таймера на ноги МК
+  SET_BIT(TIM5->CCER, TIM_CCER_CC3E);                     // включим выходы таймера на ноги МК
+  CLEAR_BIT(TIM5->CCMR1, TIM_CCMR1_OC2M);                 // очистим регистр
+  CLEAR_BIT(TIM5->CCMR2, TIM_CCMR2_OC3M);                 // очистим регистр
+  SET_BIT(TIM5->CCMR1, 0b100 << TIM_CCMR1_OC2M_Pos);      // ноль на выходе Force inactive level
+  SET_BIT(TIM5->CCMR2, 0b100 << TIM_CCMR2_OC3M_Pos);      // ноль на выходе Force inactive level
+  HAL_ADC_Start_DMA (&hadc1, (uint32_t *)adcBuf, FILTRADC);      // запустим АЦП
   doWork ();
   /* USER CODE END 2 */
 
@@ -135,8 +149,8 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-  RCC_OscInitStruct.PLL.PLLM = 12;
-  RCC_OscInitStruct.PLL.PLLN = 96;
+  RCC_OscInitStruct.PLL.PLLM = 4;
+  RCC_OscInitStruct.PLL.PLLN = 100;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
   RCC_OscInitStruct.PLL.PLLQ = 4;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
@@ -157,6 +171,58 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief ADC1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_ADC1_Init(void)
+{
+
+  /* USER CODE BEGIN ADC1_Init 0 */
+
+  /* USER CODE END ADC1_Init 0 */
+
+  ADC_ChannelConfTypeDef sConfig = {0};
+
+  /* USER CODE BEGIN ADC1_Init 1 */
+
+  /* USER CODE END ADC1_Init 1 */
+
+  /** Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
+  */
+  hadc1.Instance = ADC1;
+  hadc1.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV6;
+  hadc1.Init.Resolution = ADC_RESOLUTION_12B;
+  hadc1.Init.ScanConvMode = DISABLE;
+  hadc1.Init.ContinuousConvMode = ENABLE;
+  hadc1.Init.DiscontinuousConvMode = DISABLE;
+  hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+  hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+  hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+  hadc1.Init.NbrOfConversion = 1;
+  hadc1.Init.DMAContinuousRequests = ENABLE;
+  hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+  if (HAL_ADC_Init(&hadc1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
+  */
+  sConfig.Channel = ADC_CHANNEL_3;
+  sConfig.Rank = 1;
+  sConfig.SamplingTime = ADC_SAMPLETIME_480CYCLES;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN ADC1_Init 2 */
+
+  /* USER CODE END ADC1_Init 2 */
+
 }
 
 /**
@@ -290,6 +356,17 @@ static void MX_TIM5_Init(void)
 }
 
 /**
+  * Enable DMA controller clock
+  */
+static void MX_DMA_Init(void)
+{
+
+  /* DMA controller clock enable */
+  __HAL_RCC_DMA2_CLK_ENABLE();
+
+}
+
+/**
   * @brief GPIO Initialization Function
   * @param None
   * @retval None
@@ -304,31 +381,27 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, Buzzer_Pin|Led_Display_Pin|CS_Touch_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOB, Data_Comand_Pin|Reset_Display_Pin|CS_Display_Pin|Led_Display_Pin
+                          |Buzzer_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOB, Data_Comand_Pin|Reset_Display_Pin|CS_Display_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, CS_Touch_Pin|LEDS_Pin, GPIO_PIN_RESET);
 
-  /*Configure GPIO pin : Buzzer_Pin */
-  GPIO_InitStruct.Pin = Buzzer_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-  HAL_GPIO_Init(Buzzer_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : Led_Display_Pin CS_Touch_Pin */
-  GPIO_InitStruct.Pin = Led_Display_Pin|CS_Touch_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : Data_Comand_Pin Reset_Display_Pin CS_Display_Pin */
-  GPIO_InitStruct.Pin = Data_Comand_Pin|Reset_Display_Pin|CS_Display_Pin;
+  /*Configure GPIO pins : Data_Comand_Pin Reset_Display_Pin CS_Display_Pin Led_Display_Pin
+                           Buzzer_Pin */
+  GPIO_InitStruct.Pin = Data_Comand_Pin|Reset_Display_Pin|CS_Display_Pin|Led_Display_Pin
+                          |Buzzer_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  /*Configure GPIO pins : CS_Touch_Pin LEDS_Pin */
+  GPIO_InitStruct.Pin = CS_Touch_Pin|LEDS_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /*Configure GPIO pin : IRQ_Touch_Pin */
   GPIO_InitStruct.Pin = IRQ_Touch_Pin;

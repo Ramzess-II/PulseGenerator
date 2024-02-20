@@ -18,6 +18,7 @@ extern "C" {
 void doWork (void);
 void Work (void);
 void calibration (void);
+void filtrADC (void);
 //----------------------- объявим структуры ----------------------------------//
 
 

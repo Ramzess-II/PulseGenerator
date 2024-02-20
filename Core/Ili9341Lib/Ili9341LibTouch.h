@@ -11,15 +11,6 @@ extern "C" {
 #include "saportAndData.h"
 //----------------------- дефайним значения ----------------------------------//
 
-// Warning! Use SPI bus with < 1.3 Mbit speed, better ~650 Kbit to be save.
-#define ILI9341_TOUCH_SPI_PORT hspi2
-extern SPI_HandleTypeDef ILI9341_TOUCH_SPI_PORT;
-
-#define ILI9341_TOUCH_IRQ_Pin       GPIO_PIN_12
-#define ILI9341_TOUCH_IRQ_GPIO_Port GPIOB
-#define ILI9341_TOUCH_CS_Pin        GPIO_PIN_8
-#define ILI9341_TOUCH_CS_GPIO_Port  GPIOA
-
 // change depending on screen orientation
 #define ILI9341_TOUCH_SCALE_X 320
 #define ILI9341_TOUCH_SCALE_Y 240
