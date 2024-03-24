@@ -7,7 +7,7 @@ extern TIM_HandleTypeDef htim5;
 uint32_t multiplicationFactor[3] = { 100, 100000, 100000000 };   //множитель
 //------------------------------ функции ---------------------------------------------//
 void setTimAndStart(void) {
-	ParamDevice.changeCount = ParamDevice.count;                                      // копируем из статических счетчиков в динамические
+	ParamDevice.changeCount = ParamDevice.count * ((ParamDevice.unitCount * 1000) + 1);       // копируем из статических счетчиков в динамические и умножаем чтоб получить 1к
 	CLEAR_BIT(TIM5->CCMR1, TIM_CCMR1_OC2M);                 // очистим регистр
 	CLEAR_BIT(TIM5->CCMR2, TIM_CCMR2_OC3M);                 // очистим регистр
 	CLEAR_BIT(TIM5->SR, TIM_SR_CC2IF|TIM_SR_CC3IF);         // очищаем флаг

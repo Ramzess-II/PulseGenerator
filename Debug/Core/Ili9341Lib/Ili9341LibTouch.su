@@ -1,7 +1,9 @@
 ../Core/Ili9341Lib/Ili9341LibTouch.c:11:6:ILI9341_ToucInit	16	static
 ../Core/Ili9341Lib/Ili9341LibTouch.c:25:13:ILI9341_TouchSelect	8	static
 ../Core/Ili9341Lib/Ili9341LibTouch.c:34:6:ILI9341_TouchUnselect	8	static
-../Core/Ili9341Lib/Ili9341LibTouch.c:38:6:ILI9341_TouchPressed	8	static
-../Core/Ili9341Lib/Ili9341LibTouch.c:42:6:ILI9341_TouchGetCoordinates	64	static
-../Core/Ili9341Lib/Ili9341LibTouch.c:98:6:figuringData	16	static
-../Core/Ili9341Lib/Ili9341LibTouch.c:114:9:calibTouch	64	static
+../Core/Ili9341Lib/Ili9341LibTouch.c:38:10:flipX	16	static
+../Core/Ili9341Lib/Ili9341LibTouch.c:42:10:flipY	16	static
+../Core/Ili9341Lib/Ili9341LibTouch.c:46:6:ILI9341_TouchPressed	8	static
+../Core/Ili9341Lib/Ili9341LibTouch.c:50:6:ILI9341_TouchGetCoordinates	64	static
+../Core/Ili9341Lib/Ili9341LibTouch.c:106:6:figuringData	16	static
+../Core/Ili9341Lib/Ili9341LibTouch.c:122:9:calibTouch	64	static

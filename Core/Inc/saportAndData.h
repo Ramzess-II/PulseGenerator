@@ -17,7 +17,9 @@ extern "C" {
 #define PNP                             0
 
 #define FILTRADC                        64
-#define MAX_CURRENT                     2
+#define MAX_CURRENT                     5
+
+#define SAVE_EEPROM                     1
 
 #define TOUCH_DISPLAY                   0x00000001
 #define ONE_TOUCH                       0x00000002
@@ -36,10 +38,15 @@ extern "C" {
 #define BUZER_SET             SET_BIT(GPIOB->BSRR, GPIO_BSRR_BS_9)
 #define BUZER_RESET           SET_BIT(GPIOB->BSRR, GPIO_BSRR_BR_9)
 
-#define ADR_DATA_MIN_X      0x0807FFF0               // ячейка памяти с адрессом минимального значения по х
-#define ADR_DATA_MAX_X      0x0807FFF4
-#define ADR_DATA_MIN_Y      0x0807FFF8
-#define ADR_DATA_MAX_Y      0x0807FFFC
+#define ADR_START_MEM       0x08008000               // Sector 2
+#define QUANTITY_SAVE       6                        // количество данных к записи
+#define MAX_RANGE           680                      // количество ячеек для записи сюда входит количество данных и размер страницы
+#define QUANTITY_REGISTR    ((((16 * 1024)/4)/QUANTITY_SAVE) - 1)      // 16килобайт / 4 так как по 32 бита переменные и поделить на количество данных к сохранению
+
+#define ADR_DATA_MIN_X      0x08004000               // ячейка памяти с адрессом минимального значения по х // Sector 1
+#define ADR_DATA_MAX_X      0x08004004
+#define ADR_DATA_MIN_Y      0x08004008
+#define ADR_DATA_MAX_Y      0x0800400C
 
 // Warning! Use SPI bus with < 1.3 Mbit speed, better ~650 Kbit to be save.
 #define ILI9341_TOUCH_SPI_PORT hspi2
@@ -74,18 +81,29 @@ typedef struct {
     const tImage *image;
     } tChar;
 
-    struct ChangParamDevice {
-    	uint16_t impuls;
-    	uint16_t pause;
-    	uint16_t count;
-    	uint16_t changeCount;
-    	uint8_t  unitImpuls;
-    	uint8_t  unitPause;
-    	uint8_t  flagInfinity;
-    	uint8_t  NPNTranzistor;
-    	uint8_t  PNPTranzistor;
-    	uint8_t  power;
-   };
+struct ChangParamDevice {
+    	int32_t   impuls;
+    	int32_t   pause;
+    	int32_t   count;
+    	uint32_t  changeCount;
+    	uint32_t  unitImpuls;
+    	uint32_t  unitPause;
+    	uint32_t  unitCount;
+    	uint8_t   flagInfinity;
+    	uint8_t   NPNTranzistor;
+    	uint8_t   PNPTranzistor;
+    	uint8_t   power;
+};
+
+struct _memoryParam {
+    	int32_t  impuls;
+    	int32_t  pause;
+    	int32_t  count;
+    	uint32_t changeCount;
+    	uint32_t unitImpuls;
+    	uint32_t unitPause;
+    	uint32_t unitCount;
+};
 
 enum {
 	LEFTUP,

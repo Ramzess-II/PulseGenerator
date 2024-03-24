@@ -35,6 +35,14 @@ void ILI9341_TouchUnselect() {
 	HAL_GPIO_WritePin(ILI9341_TOUCH_CS_GPIO_Port, ILI9341_TOUCH_CS_Pin, GPIO_PIN_SET);
 }
 
+uint32_t flipX(uint32_t x) {            // костыли для перевернутого дисплея!!
+    return 320 - x;
+}
+
+uint32_t flipY(uint32_t y) {
+    return 240 - y;
+}
+
 bool ILI9341_TouchPressed() {
 	return HAL_GPIO_ReadPin(ILI9341_TOUCH_IRQ_GPIO_Port, ILI9341_TOUCH_IRQ_Pin) == GPIO_PIN_RESET;
 }
@@ -89,15 +97,15 @@ bool ILI9341_TouchGetCoordinates(uint16_t *x, uint16_t *y) {
 	// Uncomment this line to calibrate touchscreen:
 	// UART_Printf("raw_x = %d, raw_y = %d\r\n", x, y);
 
-	*x = (raw_x - minRawX) * ILI9341_TOUCH_SCALE_X / (maxRawX - minRawX);
-	*y = (raw_y - minRawY) * ILI9341_TOUCH_SCALE_Y / (maxRawY - minRawY);
+	*x = flipX((raw_x - minRawX) * ILI9341_TOUCH_SCALE_X / (maxRawX - minRawX));       // если дисплей не перевернут убрать flipX и flipY
+	*y = flipY((raw_y - minRawY) * ILI9341_TOUCH_SCALE_Y / (maxRawY - minRawY));
 
 	return true;
 }
 
 void figuringData(void) {
 	uint32_t multiplicationFactorX, multiplicationFactorY;
-	minX = minX / 2;
+	minX = minX / 2;                               // ищем минимальное среднее на всем отрезке
 	minY = minY / 2;
 	maxX = maxX / 2;
 	maxY = maxY / 2;
@@ -115,8 +123,7 @@ uint8_t calibTouch(uint8_t poz) {
 	static const uint8_t cmd_read_x[] = { READ_X };
 	static const uint8_t cmd_read_y[] = { READ_Y };
 	static const uint8_t zeroes_tx[] = { 0x00, 0x00 };
-	repit: while (!ILI9341_TouchPressed())
-		ILI9341_TouchSelect();
+	repit: while (!ILI9341_TouchPressed()) ILI9341_TouchSelect();
 	uint32_t avg_x = 0;
 	uint32_t avg_y = 0;
 	uint8_t nsamples = 0;
@@ -142,32 +149,32 @@ uint8_t calibTouch(uint8_t poz) {
 		goto repit;
 	uint32_t raw_x = (avg_x / 16);
 	uint32_t raw_y = (avg_y / 16);
-	switch (poz) {
-	case LEFTUP:
-		minX = raw_x;
-		minY = raw_y;
-		buzzerSet(100);
-		break;
-	case RIGHTUP:
+	switch (poz) {                               // костыль костылем, ничего умнее не придумал, при калибровке точки повернул как будто дисплей уже повернут
+	case LEFTUP:                                 // и у нас лево верх на самом деле право низ и тд
 		maxX = raw_x;
-		minY += raw_y;
-		buzzerSet(100);
-		break;
-	case LEFTDOWN:
-		minX += raw_x;
 		maxY = raw_y;
 		buzzerSet(100);
 		break;
-	case RIGHTDOWN:
-		maxX += raw_x;
+	case RIGHTUP:
+		minX = raw_x;
 		maxY += raw_y;
+		buzzerSet(100);
+		break;
+	case LEFTDOWN:
+		maxX += raw_x;
+		minY = raw_y;
+		buzzerSet(100);
+		break;
+	case RIGHTDOWN:
+		minX += raw_x;
+		minY += raw_y;
 		buzzerSet(100);
 		figuringData();
 		break;
 	case CHECKCALIB:
 		buzzerSet(100);
-		if ((((raw_y - minRawY) * ILI9341_TOUCH_SCALE_Y / (maxRawY - minRawY)) < 125 && ((raw_y - minRawY) * ILI9341_TOUCH_SCALE_Y / (maxRawY - minRawY)) > 115) \
-		&& (((raw_x - minRawX) * ILI9341_TOUCH_SCALE_X / (maxRawX - minRawX)) < 165 && ((raw_x - minRawX) * ILI9341_TOUCH_SCALE_X / (maxRawX - minRawX)) > 155)){
+		if (((flipY((raw_y - minRawY) * ILI9341_TOUCH_SCALE_Y / (maxRawY - minRawY))) < 125 && (flipY((raw_y - minRawY) * ILI9341_TOUCH_SCALE_Y / (maxRawY - minRawY))) > 115) \
+		&& ((flipX((raw_x - minRawX) * ILI9341_TOUCH_SCALE_X / (maxRawX - minRawX))) < 165 && (flipX((raw_x - minRawX) * ILI9341_TOUCH_SCALE_X / (maxRawX - minRawX)) > 155))){
 			writeDataToMemory (ADR_DATA_MIN_X, minRawX);
 			writeDataToMemory (ADR_DATA_MAX_X, maxRawX);
 			writeDataToMemory (ADR_DATA_MIN_Y, minRawY);
@@ -181,3 +188,40 @@ uint8_t calibTouch(uint8_t poz) {
 }
 
 //------------------------------ примечания --------------------------------------------//
+//------------------------------ устарело   --------------------------------------------//
+// этот код использовать если дисплей не нужно переворачивать
+/*switch (poz) {
+case LEFTUP:
+	minX = raw_x;
+	minY = raw_y;
+	buzzerSet(100);
+	break;
+case RIGHTUP:
+	maxX = raw_x;
+	minY += raw_y;
+	buzzerSet(100);
+	break;
+case LEFTDOWN:
+	minX += raw_x;
+	maxY = raw_y;
+	buzzerSet(100);
+	break;
+case RIGHTDOWN:
+	maxX += raw_x;
+	maxY += raw_y;
+	buzzerSet(100);
+	figuringData();
+	break;
+case CHECKCALIB:
+	buzzerSet(100);
+	if ((((raw_y - minRawY) * ILI9341_TOUCH_SCALE_Y / (maxRawY - minRawY)) < 125 && ((raw_y - minRawY) * ILI9341_TOUCH_SCALE_Y / (maxRawY - minRawY)) > 115) \
+	&& (((raw_x - minRawX) * ILI9341_TOUCH_SCALE_X / (maxRawX - minRawX)) < 165 && ((raw_x - minRawX) * ILI9341_TOUCH_SCALE_X / (maxRawX - minRawX)) > 155)){
+		writeDataToMemory (ADR_DATA_MIN_X, minRawX);
+		writeDataToMemory (ADR_DATA_MAX_X, maxRawX);
+		writeDataToMemory (ADR_DATA_MIN_Y, minRawY);
+		writeDataToMemory (ADR_DATA_MAX_Y, maxRawY);
+	} else {
+		return false;
+	}
+	break;
+}*/

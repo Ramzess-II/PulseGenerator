@@ -19,6 +19,8 @@ void doWork (void);
 void Work (void);
 void calibration (void);
 void filtrADC (void);
+void readEEPROM (void);
+void saveEEPROM (void);
 //----------------------- объявим структуры ----------------------------------//
 
 

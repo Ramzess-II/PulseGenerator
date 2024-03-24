@@ -18,7 +18,7 @@ void screenSaver (void) {                                                       
 	ILI9341_WriteMyString(105, 76, bufSpi, ILI9341_GREEN, ILI9341_BLACK);
 	strcpy(bufSpi, "GENERATOR");
 	ILI9341_WriteMyString(65, 120, bufSpi, ILI9341_GREEN, ILI9341_BLACK);
-	ILI9341_WriteString(250, 220, "Ver1.1", Font_11x18, ILI9341_YELLOW, ILI9341_BLACK);
+	ILI9341_WriteString(250, 220, "Ver1.2", Font_11x18, ILI9341_YELLOW, ILI9341_BLACK);
 	drawSomePixelRoundRect(40, 66, 240, 108, 4, 2, ILI9341_YELLOW);
 	HAL_Delay(2000);
 	buzzerSet(100);                                                                            // пикнуть
@@ -136,23 +136,47 @@ void printCurrent (float current) {                                             
 void printTImpulse(void) {                                                                     // переписать длительность импульса
 	strcpy(bufSpi, "T imp:");
 	ILI9341_WriteMyString(12, 30, bufSpi, ILI9341_GREEN, ILI9341_BLACK);
-	sprintf(bufSpi, "%-3d %s  ", ParamDevice.impuls, unitTXT[ParamDevice.unitImpuls]);
+	sprintf(bufSpi, "%-3u %s  ", (unsigned int)ParamDevice.impuls, unitTXT[ParamDevice.unitImpuls]);
 	ILI9341_WriteMyString(125, 30, bufSpi, ILI9341_GREEN, ILI9341_BLACK);
 }
 
 void printTPause(void) {                                                                       // переписать длительность паузы
 	strcpy(bufSpi, "T paus:");
 	ILI9341_WriteMyString(12, 78, bufSpi, ILI9341_YELLOW, ILI9341_BLACK);
-	sprintf(bufSpi, "%-3d %s  ", ParamDevice.pause, unitTXT[ParamDevice.unitPause]);
+	sprintf(bufSpi, "%-3u %s  ", (unsigned int)ParamDevice.pause, unitTXT[ParamDevice.unitPause]);
 	ILI9341_WriteMyString(125, 78, bufSpi, ILI9341_YELLOW, ILI9341_BLACK);
 }
 
-void printCount(void) {                                                                        // переписать количество повторений
+void printCount(uint32_t clear) {                                                              // переписать количество повторений
+	if (clear) {
+		strcpy(bufSpi, "                 ");
+		ILI9341_WriteMyString(125, 126, bufSpi, ILI9341_PURPLE, ILI9341_BLACK);
+	}
 	strcpy(bufSpi, "Count:");
 	ILI9341_WriteMyString(12, 126, bufSpi, ILI9341_PURPLE, ILI9341_BLACK);
 	if (ParamDevice.count) {
-		sprintf(bufSpi, "%-3d %s  ", ParamDevice.count, "rp");
+		if (ParamDevice.unitCount) {
+			sprintf(bufSpi, "%-3u %s", (unsigned int) ParamDevice.count, "kr  ");
+			ILI9341_WriteMyString(125, 126, bufSpi, ILI9341_PURPLE, ILI9341_BLACK);
+		} else {
+			sprintf(bufSpi, "%-3u %s", (unsigned int) ParamDevice.count, " rp  ");
+			ILI9341_WriteMyString(125, 126, bufSpi, ILI9341_PURPLE, ILI9341_BLACK);
+		}
+	} else {
+		sprintf(bufSpi, "~   %s  ", "rp");                                                     // в символах я заменил ~ знаком бесконечности
 		ILI9341_WriteMyString(125, 126, bufSpi, ILI9341_PURPLE, ILI9341_BLACK);
+	}
+}
+
+void printReversCount(uint32_t count) {                                                       // переписать количество повторений
+	if (ParamDevice.count) {
+		if (count >= 1000) {
+			sprintf(bufSpi, "%-3u %s", (unsigned int) (count / 1000), "kr  ");
+			ILI9341_WriteMyString(125, 126, bufSpi, ILI9341_PURPLE, ILI9341_BLACK);
+		} else {
+			sprintf(bufSpi, "%-3u %s", (unsigned int) count, " rp  ");
+			ILI9341_WriteMyString(125, 126, bufSpi, ILI9341_PURPLE, ILI9341_BLACK);
+		}
 	} else {
 		sprintf(bufSpi, "~   %s  ", "rp");                                                     // в символах я заменил ~ знаком бесконечности
 		ILI9341_WriteMyString(125, 126, bufSpi, ILI9341_PURPLE, ILI9341_BLACK);
@@ -178,7 +202,7 @@ void mainDisplayPrint(void) {                                                   
 	printFreeq();
 	printTImpulse();
 	printTPause();
-	printCount();
+	printCount(0);
 	printColorImage(24, 182, 50, 50, NO_PRESSED, image_Plus);
 	printColorImage(98, 182, 50, 50, NO_PRESSED, image_Arrow);
 	printColorImage(172, 182, 50, 50, NO_PRESSED, image_Minus);
@@ -198,19 +222,19 @@ uint8_t checkAreaTouch(uint16_t xTouch, uint16_t yTouch, uint16_t xScan, uint16_
 
 void checkstrokeArea(void) {                                                                   // проверка нажатия на параметры ( импульс, пауза)
 	if (!READ_FLAG(AREA1_PRESS, globalFlag)) {                                                 // если область активна то рисуем желтый прямоугольник
-		drawSomePixelRoundRect(7, 28, 242, 48, 4, 2, ILI9341_BLACK);                           // а если нет то черным закрашиваем
+		drawSomePixelRoundRect(7, 28, 245, 48, 4, 2, ILI9341_BLACK);                           // а если нет то черным закрашиваем
 	} else {
-		drawSomePixelRoundRect(7, 28, 242, 48, 4, 2, ILI9341_YELLOW);
+		drawSomePixelRoundRect(7, 28, 245, 48, 4, 2, ILI9341_YELLOW);
 	}
 	if (!READ_FLAG(AREA2_PRESS, globalFlag)) {
-		drawSomePixelRoundRect(7, 76, 242, 48, 4, 2, ILI9341_BLACK);
+		drawSomePixelRoundRect(7, 76, 245, 48, 4, 2, ILI9341_BLACK);
 	} else {
-		drawSomePixelRoundRect(7, 76, 242, 48, 4, 2, ILI9341_YELLOW);
+		drawSomePixelRoundRect(7, 76, 245, 48, 4, 2, ILI9341_YELLOW);
 	}
 	if (!READ_FLAG(AREA3_PRESS, globalFlag)) {
-		drawSomePixelRoundRect(7, 124, 242, 48, 4, 2, ILI9341_BLACK);
+		drawSomePixelRoundRect(7, 124, 245, 48, 4, 2, ILI9341_BLACK);
 	} else {
-		drawSomePixelRoundRect(7, 124, 242, 48, 4, 2, ILI9341_YELLOW);
+		drawSomePixelRoundRect(7, 124, 245, 48, 4, 2, ILI9341_YELLOW);
 	}
 }
 
@@ -261,9 +285,10 @@ void powerButton(void) {                                                        
 
 void externalPowerOff(void) {                                                                 // перерисовать кнопку включения из вне
 	printColorImage(246, 182, 50, 50, NO_PRESSED, image_powerGreen);
+	printCount (1);
 }
 
-void rangeMinMax(uint16_t *data, uint16_t count, uint16_t plus_minus, uint16_t min, uint16_t max) {   // ограничить максимальное количество ввода
+void rangeMinMax(int32_t *data, int32_t count, uint32_t plus_minus, int32_t min, int32_t max) {   // ограничить максимальное количество ввода
 	if (plus_minus == PLUS) {
 		if (*data + count < max) {
 			*data += count;
@@ -301,8 +326,8 @@ void changeData(uint16_t count, uint16_t plus_minus) {                          
 		printFreeq();
 	}
 	if (READ_FLAG(AREA3_PRESS, globalFlag)) {                                                 // чуть проще для количества повторов
-		rangeMinMax(&ParamDevice.count, count, plus_minus, 0, 255);
-		printCount();
+		rangeMinMax(&ParamDevice.count, count, plus_minus, 0, 999);
+		printCount(0);
 	}
 }
 
@@ -366,6 +391,13 @@ void togleUnits(void) {                                                         
 			}
 			printTPause();
 			printFreeq();
+		}
+		if (READ_FLAG(AREA3_PRESS, globalFlag)) {
+			if (ParamDevice.unitCount < 1)
+				ParamDevice.unitCount++;
+			else
+				ParamDevice.unitCount = 0;
+			printCount(0);
 		}
 	}
 }

@@ -36,6 +36,8 @@ void externalPowerOff (void);
 void endOperationWindow (uint8_t onOff);
 void overCurrent (uint8_t onOff);
 void printCurrent (float current);
+void printReversCount(uint32_t count);
+void printCount(uint32_t clear);
 //----------------------- объявим структуры ----------------------------------//
 
 
